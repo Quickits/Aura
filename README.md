@@ -1,2 +1,2 @@
 # Aura
-🎶 Aura is a Audio player framework
+🎶 Aura is a an audio player framework
