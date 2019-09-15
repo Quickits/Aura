@@ -1,58 +1,193 @@
 package cn.quickits.aura.impl
 
+import cn.quickits.aura.Aura
 import cn.quickits.aura.interfaces.Music
+import cn.quickits.aura.util.RawDataSourceProvider
+import tv.danmaku.ijk.media.player.IjkMediaPlayer
+import java.io.IOException
+import kotlin.math.abs
 
-internal class AndroidMusic : Music {
+
+/**
+ * @author Gavin Liu
+ *
+ * Created on 2019-09-06.
+ */
+internal class AndroidMusic constructor(
+    val audio: AndroidAudio,
+    var url: String? = null,
+    var resourceId: Int? = null
+) : Music {
+
+    var wasPlaying = false
+
+    private var player: IjkMediaPlayer = IjkMediaPlayer()
+
+    private var isPrepared = false
+
+    private var volume = 1f
+
+    private var mOnCompletionListener: Music.OnCompletionListener? = null
+
+    init {
+        player.reset()
+        player.setOnPreparedListener {
+            isPrepared = true
+            player.start()
+        }
+
+        player.setOnCompletionListener {
+            mOnCompletionListener?.onCompletion(this)
+        }
+    }
 
     override fun play() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        if (player.isPlaying) return
+
+        if (isPrepared) {
+            player.start()
+            return
+        }
+
+        url?.let { prepare(it) }
+
+        resourceId?.let { prepare(it) }
+    }
+
+    override fun play(url: String) {
+        this.resourceId = null
+        this.url = url
+        isPrepared = false
+        play()
+    }
+
+    override fun play(id: Int) {
+        this.resourceId = id
+        this.url = null
+        isPrepared = false
+        play()
     }
 
     override fun pause() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        try {
+            if (player.isPlaying) {
+                player.pause()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        wasPlaying = false
     }
 
     override fun stop() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        if (isPrepared) {
+            player.seekTo(0)
+        }
+
+        player.stop()
+        isPrepared = false
     }
 
     override fun isPlaying(): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return try {
+            player.isPlaying
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
     }
 
     override fun setLooping(isLooping: Boolean) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        player.isLooping = isLooping
     }
 
     override fun isLooping(): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return try {
+            player.isLooping
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
     }
 
     override fun setVolume(volume: Float) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        this.volume = volume
+        player.setVolume(volume, volume)
     }
 
-    override fun getVolume(): Float {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun getVolume(): Float = volume
 
     override fun setPan(pan: Float, volume: Float) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        var leftVolume = volume
+        var rightVolume = volume
+
+        if (pan < 0) {
+            rightVolume *= 1 - abs(pan)
+        } else if (pan > 0) {
+            leftVolume *= 1 - abs(pan)
+        }
+
+        player.setVolume(leftVolume, rightVolume)
+        this.volume = volume
     }
 
-    override fun setPosition(position: Float) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun setPosition(position: Int) {
+        try {
+            if (!isPrepared) {
+                player.prepareAsync()
+            }
+            player.seekTo(position.toLong())
+        } catch (e: IllegalStateException) {
+            e.printStackTrace()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
     }
 
-    override fun getPosition(): Float {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun getPosition(): Int = player.currentPosition.toInt()
+
+    override fun getDuration(): Int = player.duration.toInt()
 
     override fun setOnCompletionListener(listener: Music.OnCompletionListener) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        this.mOnCompletionListener = listener
     }
 
     override fun dispose() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val time = System.currentTimeMillis()
+        try {
+            player.release()
+        } catch (t: Throwable) {
+            t.printStackTrace()
+        } finally {
+            mOnCompletionListener = null
+
+            synchronized(audio.musics) {
+                audio.musics.remove(this)
+            }
+        }
+    }
+
+    private fun prepare(source: String) {
+        try {
+            player.reset()
+            player.dataSource = source
+        } catch (e: IOException) {
+            e.printStackTrace()
+            return
+        }
+
+        player.prepareAsync()
+    }
+
+    private fun prepare(id: Int) {
+        try {
+            player.reset()
+            player.setDataSource(RawDataSourceProvider(Aura.context.resources.openRawResourceFd(id)))
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return
+        }
+
+        player.prepareAsync()
     }
 }

@@ -1,8 +1,19 @@
 package cn.quickits.aura.interfaces
 
+/**
+ * Music 表示比较长的音频
+ *
+ * @author Gavin Liu
+ *
+ * Created on 2019-09-06.
+ */
 interface Music : Disposable {
 
     fun play()
+
+    fun play(url: String)
+
+    fun play(id: Int)
 
     fun pause()
 
@@ -20,9 +31,11 @@ interface Music : Disposable {
 
     fun setPan(pan: Float, volume: Float)
 
-    fun setPosition(position: Float)
+    fun setPosition(position: Int)
 
-    fun getPosition(): Float
+    fun getPosition(): Int
+
+    fun getDuration(): Int
 
     fun setOnCompletionListener(listener: OnCompletionListener)
 

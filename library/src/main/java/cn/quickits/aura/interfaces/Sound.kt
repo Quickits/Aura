@@ -1,18 +1,25 @@
 package cn.quickits.aura.interfaces
 
+/**
+ * Sound 表示比较短的音频
+ *
+ * @author Gavin Liu
+ *
+ * Created on 2019-09-06.
+ */
 interface Sound : Disposable {
 
-    fun play(): Long
+    fun play(): Int
 
-    fun play(volume: Float): Long
+    fun play(volume: Float): Int
 
-    fun play(volume: Float, pitch: Float, pan: Float): Long
+    fun play(volume: Float, pitch: Float, pan: Float): Int
 
-    fun loop(): Long
+    fun loop(): Int
 
-    fun loop(volume: Float): Long
+    fun loop(volume: Float): Int
 
-    fun loop(volume: Float, pitch: Float, pan: Float): Long
+    fun loop(volume: Float, pitch: Float, pan: Float): Int
 
     fun stop()
 
@@ -20,17 +27,17 @@ interface Sound : Disposable {
 
     fun resume()
 
-    fun stop(soundId: Long)
+    fun stop(streamId: Int)
 
-    fun pause(soundId: Long)
+    fun pause(streamId: Int)
 
-    fun resume(soundId: Long)
+    fun resume(streamId: Int)
 
-    fun setLooping(soundId: Long, looping: Boolean)
+    fun setLooping(streamId: Int, looping: Boolean)
 
-    fun setPitch(soundId: Long, pitch: Float)
+    fun setPitch(streamId: Int, pitch: Float)
 
-    fun setVolume(soundId: Long, volume: Float)
+    fun setVolume(streamId: Int, volume: Float)
 
-    fun setPan(soundId: Long, pan: Float, volume: Float)
+    fun setPan(streamId: Int, pan: Float, volume: Float)
 }
