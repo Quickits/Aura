@@ -15,7 +15,7 @@ internal class AndroidSound(
     private val audio: AndroidAudio,
     private val soundPool: SoundPool,
     url: String? = null,
-    resourceId: Int? = null
+    rawId: Int? = null
 ) : Sound {
 
     private var soundId: Int = 0
@@ -23,7 +23,7 @@ internal class AndroidSound(
     private val streamIds = arrayListOf<Int>()
 
     init {
-        resourceId?.let { soundId = soundPool.load(Aura.context.resources.openRawResourceFd(it), 1) }
+        rawId?.let { soundId = soundPool.load(Aura.context.resources.openRawResourceFd(it), 1) }
 
         url?.let { soundId = soundPool.load(it, 1) }
     }

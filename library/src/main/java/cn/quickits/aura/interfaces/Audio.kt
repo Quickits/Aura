@@ -15,9 +15,9 @@ interface Audio {
 
     fun newMusic(url: String): Music
 
-    fun newMusic(id: Int): Music
+    fun newMusic(rawId: Int): Music
 
     fun newSound(url: String): Sound
 
-    fun newSound(id: Int): Sound
+    fun newSound(rawId: Int): Sound
 }

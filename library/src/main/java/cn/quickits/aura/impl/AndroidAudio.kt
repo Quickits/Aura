@@ -80,8 +80,8 @@ internal class AndroidAudio constructor(context: Context) : Audio {
         return music
     }
 
-    override fun newMusic(id: Int): Music {
-        val music = AndroidMusic(audio = this, resourceId = id)
+    override fun newMusic(rawId: Int): Music {
+        val music = AndroidMusic(audio = this, rawId = rawId)
 
         synchronized(musics) {
             musics.add(music)
@@ -93,6 +93,6 @@ internal class AndroidAudio constructor(context: Context) : Audio {
     override fun newSound(url: String): Sound =
         AndroidSound(audio = this, soundPool = soundPool, url = url)
 
-    override fun newSound(id: Int): Sound =
-        AndroidSound(audio = this, soundPool = soundPool, resourceId = id)
+    override fun newSound(rawId: Int): Sound =
+        AndroidSound(audio = this, soundPool = soundPool, rawId = rawId)
 }

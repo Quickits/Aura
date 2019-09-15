@@ -16,7 +16,7 @@ import kotlin.math.abs
 internal class AndroidMusic constructor(
     val audio: AndroidAudio,
     var url: String? = null,
-    var resourceId: Int? = null
+    var rawId: Int? = null
 ) : Music {
 
     var wasPlaying = false
@@ -51,18 +51,18 @@ internal class AndroidMusic constructor(
 
         url?.let { prepare(it) }
 
-        resourceId?.let { prepare(it) }
+        rawId?.let { prepare(it) }
     }
 
     override fun play(url: String) {
-        this.resourceId = null
+        this.rawId = null
         this.url = url
         isPrepared = false
         play()
     }
 
-    override fun play(id: Int) {
-        this.resourceId = id
+    override fun play(rawId: Int) {
+        this.rawId = rawId
         this.url = null
         isPrepared = false
         play()

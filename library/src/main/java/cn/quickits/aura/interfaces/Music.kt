@@ -13,7 +13,7 @@ interface Music : Disposable {
 
     fun play(url: String)
 
-    fun play(id: Int)
+    fun play(rawId: Int)
 
     fun pause()
 

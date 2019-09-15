@@ -34,10 +34,10 @@ object Aura : Audio {
 
     override fun newMusic(url: String): Music = audio.newMusic(url)
 
-    override fun newMusic(id: Int): Music = audio.newMusic(id)
+    override fun newMusic(rawId: Int): Music = audio.newMusic(rawId)
 
     override fun newSound(url: String): Sound = audio.newSound(url)
 
-    override fun newSound(id: Int): Sound = audio.newSound(id)
+    override fun newSound(rawId: Int): Sound = audio.newSound(rawId)
 
 }
